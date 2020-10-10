@@ -26,19 +26,21 @@ fn connection_details(mut stream: TcpStream) {
 
     println!("Peer: {} \n Request: {}", peer, String::from_utf8_lossy(&buffer[..]));
 
-    //stop note:  how to conver SocketAddr to &str
-    addr_lookup(peer.to_str());
+    addr_lookup(peer.to_string());
 }
 
-fn addr_lookup(addr: &str) {
+fn addr_lookup(addr: String) {
     let key = env::var("IPINFO_KEY").unwrap();
     let config = IpInfoConfig { token: Some(key.to_string()), ..Default::default() };
     let mut ipinfo = IpInfo::new(config).expect("should construct");
-    let res = ipinfo.lookup(&[addr]);
+    let ip = &addr[0..addr.find(':').unwrap()];
+    let res = ipinfo.lookup(&[ip]);
 
     println!("---- Peer Address Lookup ---");
     match res {
-        Ok(r) => println!("{}: {}", addr, r[addr].hostname),
+        //expand data from IpDetails struct! (what details would be needed to plot)
+        Ok(r) => println!("{}: {}", ip, r[ip].region),
         Err(e) => println!("error occurred: {}", &e.to_string()),
     }
+    println!("\n\n\n")
 }
