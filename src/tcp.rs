@@ -34,13 +34,16 @@ fn addr_lookup(addr: String) {
     let config = IpInfoConfig { token: Some(key.to_string()), ..Default::default() };
     let mut ipinfo = IpInfo::new(config).expect("should construct");
     let ip = &addr[0..addr.find(':').unwrap()];
-    let res = ipinfo.lookup(&[ip]);
+    let res = ipinfo.lookup(&[ip]).expect("should lookup");
 
     println!("---- Peer Address Lookup ---");
-    match res {
-        //expand data from IpDetails struct! (what details would be needed to plot)
-        Ok(r) => println!("{}: {}", ip, r[ip].region),
-        Err(e) => println!("error occurred: {}", &e.to_string()),
-    }
-    println!("\n\n\n")
+
+    let details = &res[ip];
+    println!("City: {}", details.city);
+    println!("Country: {}", details.country);
+    println!("Region: {}", details.region);
+    println!("Lat, Long: {}", details.loc);
+    println!("Timezone: {:?}", details.timezone);
+
+    println!("\n\n");
 }
