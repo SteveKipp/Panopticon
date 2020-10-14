@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 ipinfo = "0.1"
+iced = "0.1"

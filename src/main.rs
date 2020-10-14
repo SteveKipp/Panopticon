@@ -1,6 +1,8 @@
 mod tcp;
+mod ui;
 
 fn main() {
-    println!("Starting server on port 22...");
-    tcp::listen(7878);
+    println!("Starting the Panopticon...");
+    //tcp::listen(7878);
+    ui::main();
 }
