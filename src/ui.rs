@@ -1,22 +1,46 @@
-use druid::widget::{Button, Flex, Label};
-use druid::{AppLauncher, LocalizedString, PlatformError, Widget, WidgetExt, WindowDesc};
+use crate::tcp;
+use druid::im::{vector, Vector};
+use druid::widget::{Flex, Label, List, Scroll};
+use druid::{
+    AppLauncher, Color, Data, Lens, UnitPoint, Widget, WidgetExt, WindowDesc,
+};
 
-pub fn main() -> Result<(), PlatformError> {
+#[derive(Clone, Data, Lens)]
+struct AppData {
+    incoming: Vector<u32>,
+}
+
+pub fn main() {
     let main_window = WindowDesc::new(ui_builder);
-    let data = 0_u32;
+    let inc = vector![0, 1, 2, 3];
+    let data = AppData { incoming: inc };
+    // this listen has to be run asynchronously from the ui
+    // or else it halts the ui execution
+    //tcp::listen(7878);
     AppLauncher::with_window(main_window)
         .use_simple_logger()
         .launch(data)
+        .expect("#! Launch failed")
 }
 
-fn ui_builder() -> impl Widget<u32> {
-    // The label text will be computed dynamically based on the current locale and count
-    let text =
-        LocalizedString::new("hello-counter").with_arg("count", |data: &u32, _env| (*data).into());
-    let label = Label::new(text).padding(5.0).center();
-    let button = Button::new("increment")
-        .on_click(|_ctx, data, _env| *data += 1)
-        .padding(5.0);
+fn ui_builder() -> impl Widget<AppData> {
+    let log = Scroll::new(List::new(|| {
+            Label::new(|item: &u32, _env: &_| format!("Incoming -> #{}", item))
+                .align_vertical(UnitPoint::LEFT)
+                .padding(10.0)
+                .expand()
+                .height(50.0)
+                .background(Color::rgb(0.5, 0.5, 0.5))
+        })).lens(AppData::incoming);
 
-    Flex::column().with_child(label).with_child(button)
+    Flex::row()
+        .with_flex_child(
+            Flex::column().with_flex_child(
+                Label::new("Map Widget Here")
+                    .padding(100.0),
+                1.0),
+        1.0)
+        .with_flex_child(
+            Flex::column().with_flex_child(log, 1.0),
+        1.0)
 }

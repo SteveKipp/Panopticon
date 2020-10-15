@@ -8,4 +8,5 @@ edition = "2018"
 
 [dependencies]
 ipinfo = "0.1"
-druid = "0.6.0"
+druid = { git = "https://github.com/linebender/druid.git", features = ["im"]}
+im = { version = "*", features = ["proptest", "serde"] }

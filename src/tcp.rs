@@ -1,8 +1,8 @@
+
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::io::prelude::*;
 use std::env;
-
 use ipinfo::{IpInfo, IpInfoConfig};
 
 pub fn listen(port: i32) {
