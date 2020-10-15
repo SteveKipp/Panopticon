@@ -8,9 +8,4 @@ edition = "2018"
 
 [dependencies]
 ipinfo = "0.1"
-
-
-#this requires the openGL driver
-[dependencies.iced]
-git = "https://github.com/hecrj/iced.git"
-features = ["glow"]
+druid = "0.6.0"
