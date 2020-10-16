@@ -28,22 +28,25 @@ pub fn main() {
 fn ui_builder() -> impl Widget<AppData> {
     let log = Scroll::new(List::new(|| {
                 Label::new(|item: &u32, _env: &_| format!("Incoming -> #{}", item))
-                    .align_vertical(UnitPoint::RIGHT)
-                    .expand()
-                    .height(50.0)
-                    .width(50.0)
                     .background(Color::rgb(0.5, 0.5, 0.5))
                 })).vertical().lens(AppData::incoming);
 
     Flex::row()
         .with_flex_child(
             Flex::column()
-                .with_flex_child(
-                Label::new("Map Widget Here")
-                    .center(),
-                1.0).fix_width(500.0),
-            1.0)
-        .with_flex_child(
-            Flex::column()
-                .with_flex_child(log, 1.0), 1.0)
+                .with_flex_child(Label::new("Map Widget Here")
+                            .expand()
+                            .border(Color::WHITE, 2.0),
+            1.0),
+        1.0)
+        .with_child(log
+                    .expand()
+                    .width(100.0)
+                    //Stop note: how do I make it fill the space only vertically
+                    .height(600.0)
+                    .border(Color::WHITE, 2.0))
+
+        //.add_child(
+        //    Flex::column()
+        //        .with_flex_child(log, 1.0))
 }
