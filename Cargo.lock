@@ -1517,6 +1517,7 @@ name = "panopticon"
 version = "0.1.0"
 dependencies = [
  "druid",
+ "futures 0.3.6",
  "im",
  "ipinfo",
 ]

@@ -1,33 +1,42 @@
 use crate::tcp;
+use std::thread;
 use druid::im::{vector, Vector};
 use druid::widget::{Flex, Label, List, Scroll};
 use druid::{
-    AppLauncher, Color, Data, Lens, UnitPoint, Widget, WidgetExt, WindowDesc,
+    AppLauncher, Color, Data, Lens, Widget, WidgetExt, WindowDesc,
 };
 
 
 //I think this is the state of a component
 #[derive(Clone, Data, Lens)]
-struct AppData {
-    incoming: Vector<u32>,
+pub struct AppData {
+    pub incoming: Vector<u32>,
+}
+
+fn launch(data: AppData){
+    let window = WindowDesc::new(ui_builder).window_size((800.0, 600.0));
+     AppLauncher::with_window(window)
+            .use_simple_logger()
+            .launch(data)
+            .expect("#! Launch failed")
 }
 
 pub fn main() {
-    let main_window = WindowDesc::new(ui_builder).window_size((800.0, 600.0));
     let inc = vector![0, 1, 2, 3];
-    let data = AppData { incoming: inc };
-    // this listen has to be run asynchronously from the ui
-    // or else it halts the ui execution
-    //tcp::listen(7878);
-    AppLauncher::with_window(main_window)
-        .use_simple_logger()
-        .launch(data)
-        .expect("#! Launch failed")
+    let mut data = AppData { incoming: inc };
+
+    // STOPNOTE - moving data between the threads is hard
+    // need to figure out to make the data able to be moved into
+    // a clojure
+    thread::spawn(|| {
+        tcp::listen(7878, &mut data);
+    });
+    launch(data);
 }
 
 fn ui_builder() -> impl Widget<AppData> {
     let log = Scroll::new(List::new(|| {
-                Label::new(|item: &u32, _env: &_| format!("Incoming -> #{}", item))
+                Label::new(|item: &u32, _env: &_| format!("I -> {}", item))
                     .background(Color::rgb(0.5, 0.5, 0.5))
                 })).vertical().lens(AppData::incoming);
 

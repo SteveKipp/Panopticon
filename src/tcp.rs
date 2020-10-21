@@ -1,12 +1,22 @@
-
+use crate::ui;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::io::prelude::*;
-use std::env;
+use std::{env, thread, time};
 use ipinfo::{IpInfo, IpInfoConfig};
 
-pub fn listen(port: i32) {
-    let addr = format!("0.0.0.0:{}", port);
+pub fn listen(port: i32, state: &mut ui::AppData) {
+
+    println!("{:?}", state.incoming);
+
+    for x in 1..10{
+        state.incoming.push_back(x);
+        println!("{:?}", state.incoming);
+
+        thread::sleep(time::Duration::from_secs(10));
+    }
+
+    /*let addr = format!("0.0.0.0:{}", port);
 
     let listener = TcpListener::bind(addr).unwrap();
 
@@ -15,7 +25,7 @@ pub fn listen(port: i32) {
 
         println!("----Incoming Connection----");
         connection_details(stream);
-    }
+    }*/
 }
 
 fn connection_details(mut stream: TcpStream) {
