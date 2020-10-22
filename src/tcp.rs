@@ -5,16 +5,9 @@ use std::io::prelude::*;
 use std::{env, thread, time};
 use ipinfo::{IpInfo, IpInfoConfig};
 
-pub fn listen(port: i32, state: &mut ui::AppData) {
+pub fn listen(port: i32) {
 
-    println!("{:?}", state.incoming);
 
-    for x in 1..10{
-        state.incoming.push_back(x);
-        println!("{:?}", state.incoming);
-
-        thread::sleep(time::Duration::from_secs(10));
-    }
 
     /*let addr = format!("0.0.0.0:{}", port);
 
@@ -27,6 +20,7 @@ pub fn listen(port: i32, state: &mut ui::AppData) {
         connection_details(stream);
     }*/
 }
+
 
 fn connection_details(mut stream: TcpStream) {
     let mut buffer = [0; 1024];
