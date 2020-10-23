@@ -3,6 +3,6 @@ mod ui;
 use::iced;
 
 fn main() -> iced::Result {
-    println!("Starting the Panopticon...");
+    println!("Starting...");
     ui::main()
 }
