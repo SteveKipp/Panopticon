@@ -1,36 +1,44 @@
-use crate::ui;
-use std::net::TcpListener;
-use std::net::TcpStream;
-use std::io::prelude::*;
-use std::{env, thread, time};
+use iced::futures;
+use tokio::{
+    stream::Stream,
+    net::TcpListener,
+};
+use std::{env};
 use ipinfo::{IpInfo, IpInfoConfig};
 
-pub fn listen(port: i32) {
-
-
-
-    /*let addr = format!("0.0.0.0:{}", port);
-
-    let listener = TcpListener::bind(addr).unwrap();
-
-    for stream in listener.incoming() {
-        let stream = stream.unwrap();
-
-        println!("----Incoming Connection----");
-        connection_details(stream);
-    }*/
+#[derive(Debug, Clone)]
+pub enum Connection {
+    New(String),
+    Err,
 }
 
+enum State{
+    Active,
+    Stopped,
+}
 
-fn connection_details(mut stream: TcpStream) {
-    let mut buffer = [0; 1024];
-
-    stream.read(&mut buffer).unwrap();
-    let peer = stream.peer_addr().unwrap();
-
-    println!("Peer: {} \n Request: {}", peer, String::from_utf8_lossy(&buffer[..]));
-
-    addr_lookup(peer.to_string());
+//Stop Note - This stream instead of reaching the optional Some(()), is getting a function back '()'
+pub async fn listen(addr: String) -> impl Stream<Item = Connection> {
+    futures::stream::unfold(State::Active, |state| async move {
+        match state{
+            State::Active => {
+                let mut listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
+                match listener.accept().await {
+                    Ok((_socket, addr)) => {
+                        println!("new client: {:?}", addr);
+                        Some((Connection::New(addr.to_string()), State::Active))
+                    },
+                    Err(e) => {
+                        println!("couldn't get client: {:?}", e);
+                        Some((Connection::Err, State::Active))
+                    },
+                }
+            },
+            State::Stopped => {
+               Some((Connection::Err, State::Stopped))
+            }
+        };
+    });
 }
 
 fn addr_lookup(addr: String) {

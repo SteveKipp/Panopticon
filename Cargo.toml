@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 ipinfo = "0.1"
 futures = "0.3"
+tokio = { version = "0.3", features = ["full"] }
 iced = { git = "https://github.com/hecrj/iced", features = ["glow"] }
