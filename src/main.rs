@@ -1,8 +1,8 @@
 mod tcp;
 mod ui;
-use::iced;
+mod listener;
 
-fn main() -> iced::Result {
+fn main() {
     println!("Starting...");
     ui::main()
 }

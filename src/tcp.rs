@@ -6,9 +6,9 @@ use tokio::{
 use std::{env};
 use ipinfo::{IpInfo, IpInfoConfig};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum Connection {
-    New(String),
+    New(std::net::SocketAddr),
     Err,
 }
 
@@ -18,27 +18,20 @@ enum State{
 }
 
 //Stop Note - This stream instead of reaching the optional Some(()), is getting a function back '()'
-pub async fn listen(addr: String) -> impl Stream<Item = Connection> {
+pub fn listen(addr: String) -> impl Stream<Item = Connection> {
     futures::stream::unfold(State::Active, |state| async move {
+        let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
         match state{
             State::Active => {
-                let mut listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
+
                 match listener.accept().await {
-                    Ok((_socket, addr)) => {
-                        println!("new client: {:?}", addr);
-                        Some((Connection::New(addr.to_string()), State::Active))
-                    },
-                    Err(e) => {
-                        println!("couldn't get client: {:?}", e);
-                        Some((Connection::Err, State::Active))
-                    },
+                    Ok((_socket, addr)) => Some((Connection::New(addr), State::Active)),
+                    Err(e) => Some((Connection::Err, State::Stopped)),
                 }
             },
-            State::Stopped => {
-               Some((Connection::Err, State::Stopped))
-            }
-        };
-    });
+            State::Stopped => Some((Connection::Err, State::Stopped)),
+        }
+    })
 }
 
 fn addr_lookup(addr: String) {

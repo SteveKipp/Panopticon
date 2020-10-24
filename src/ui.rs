@@ -1,9 +1,11 @@
+use crate::tcp;
+use crate::listener;
 use iced::{
     executor, Application, Column, Command,Element, Settings, Text, Subscription,
 };
 
 
-pub fn main() -> iced::Result {
+pub fn main() {
     AppState::run(Settings::default())
 }
 
@@ -18,7 +20,7 @@ pub enum Connection{
 
 #[derive(Debug, Clone, Copy)]
 enum Message {
-    ConnectionAttempt(i32),
+    ConnectionAttempt(tcp::Connection)
 }
 
 
@@ -45,7 +47,7 @@ impl Application for AppState {
         match message {
             Message::ConnectionAttempt(x) => {
                 println!("Connection Attempt");
-                self.connections.push(x)
+                self.connections.push(1)
             },
         }
 
@@ -54,7 +56,7 @@ impl Application for AppState {
 
     fn subscription(&self) -> Subscription<Message> {
         if self.listening {
-            Subscription::none()
+            listener::listen("0.0.0.0:7878").map(Message::ConnectionAttempt)
         } else {
             Subscription::none()
         }

@@ -1,8 +1,15 @@
 use crate::tcp;
 use iced::{futures, Subscription};
 
+pub fn listen(addr: &str) -> iced::Subscription<tcp::Connection> {
+    Subscription::from_recipe(Listener{
+        addr: addr.to_string()
+    })
+}
 
-pub struct Listener(String);
+pub struct Listener{
+   pub addr: String,
+}
 
 impl<H, I> iced_native::subscription::Recipe<H, I> for Listener
 where
@@ -14,7 +21,7 @@ where
         use std::hash::Hash;
 
         std::any::TypeId::of::<Self>().hash(state);
-        self.0.hash(state);
+        self.addr.hash(state);
     }
 
     fn stream(
@@ -23,6 +30,6 @@ where
     ) -> futures::stream::BoxStream<'static, Self::Output> {
         use iced::futures::stream::StreamExt;
 
-        tcp::listen(self.0).boxed()
+        tcp::listen(self.addr).boxed()
     }
 }
