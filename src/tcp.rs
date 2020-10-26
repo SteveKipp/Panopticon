@@ -1,9 +1,7 @@
 use iced::futures;
-use tokio::{
-    stream::Stream,
-    net::TcpListener,
-};
 use std::{env};
+use futures::Stream;
+use std::net::TcpListener;
 use ipinfo::{IpInfo, IpInfoConfig};
 
 #[derive(Debug, Clone, Copy)]
@@ -17,14 +15,14 @@ enum State{
     Stopped,
 }
 
-//Stop Note - This stream instead of reaching the optional Some(()), is getting a function back '()'
+
 pub fn listen(addr: String) -> impl Stream<Item = Connection> {
     futures::stream::unfold(State::Active, |state| async move {
-        let listener = TcpListener::bind("127.0.0.1:8080").await.unwrap();
+        let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
         match state{
             State::Active => {
 
-                match listener.accept().await {
+                match listener.accept(){
                     Ok((_socket, addr)) => Some((Connection::New(addr), State::Active)),
                     Err(e) => Some((Connection::Err, State::Stopped)),
                 }
