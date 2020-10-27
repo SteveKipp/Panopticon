@@ -1,14 +1,14 @@
 use crate::tcp;
 use iced::{futures, Subscription};
 
-pub fn listen(addr: &str) -> iced::Subscription<tcp::Connection> {
+pub fn listen(addr: &'static str) -> iced::Subscription<tcp::Connection> {
     Subscription::from_recipe(Listener{
-        addr: addr.to_string()
+        addr: addr
     })
 }
 
 pub struct Listener{
-   pub addr: String,
+   pub addr: &'static str,
 }
 
 impl<H, I> iced_native::subscription::Recipe<H, I> for Listener

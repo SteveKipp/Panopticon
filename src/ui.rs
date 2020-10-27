@@ -10,13 +10,10 @@ pub fn main() {
 }
 
 struct AppState {
-    connections: Vec<i32>,
+    connections: Vec<String>,
     listening: bool
 }
 
-pub enum Connection{
-    Incoming(String),
-}
 
 #[derive(Debug, Clone, Copy)]
 enum Message {
@@ -46,8 +43,8 @@ impl Application for AppState {
     fn update(&mut self, message: Message) -> Command<Message> {
         match message {
             Message::ConnectionAttempt(x) => {
-                println!("Connection Attempt");
-                self.connections.push(1)
+                println!("Connection Attempt {}", x);
+                self.connections.push(x.to_string())
             },
         }
 

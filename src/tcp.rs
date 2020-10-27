@@ -1,5 +1,5 @@
 use iced::futures;
-use std::{env};
+use std::{env, fmt};
 use futures::Stream;
 use std::net::TcpListener;
 use ipinfo::{IpInfo, IpInfoConfig};
@@ -15,10 +15,19 @@ enum State{
     Stopped,
 }
 
+impl fmt::Display for Connection {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let printable = match *self {
+            Connection::New(addr) => addr.to_string(),
+            Connection::Err => "Error obtaining incoming address".to_string(),
+        };
+        write!(f, "{}", printable)
+    }
+}
 
-pub fn listen(addr: String) -> impl Stream<Item = Connection> {
-    futures::stream::unfold(State::Active, |state| async move {
-        let listener = TcpListener::bind("0.0.0.0:7878").unwrap();
+pub fn listen(addr: &'static str) -> impl Stream<Item = Connection> {
+    futures::stream::unfold(State::Active, move |state| async move {
+        let listener = TcpListener::bind(addr).unwrap();
         match state{
             State::Active => {
 
