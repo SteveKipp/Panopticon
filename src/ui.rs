@@ -1,7 +1,10 @@
 use crate::tcp;
 use crate::listener;
+use crate::style;
+
 use iced::{
-    executor, Application, Column, Command,Element, Settings, Text, Subscription,
+    executor, Application, Column, Command,Element, Settings,
+    Text, Subscription, Color, Container,
 };
 
 
@@ -62,10 +65,11 @@ impl Application for AppState {
 
     fn view(&mut self) -> Element<Message> {
         let connection_vec = Text::new(format!("{:?}", self.connections));
-
-        Column::new()
-            .padding(20)
-            .push(connection_vec)
+        Container::new(
+            Column::new()
+                .padding(20)
+                .push(connection_vec))
+            .style(style::Connections)
             .into()
     }
 }
