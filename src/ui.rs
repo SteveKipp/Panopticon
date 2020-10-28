@@ -3,8 +3,8 @@ use crate::listener;
 use crate::style;
 
 use iced::{
-    executor, Application, Column, Command,Element, Settings,
-    Text, Subscription, Color, Container,
+    executor, Application, Row, Column, Command,Element, Settings,
+    Text, Subscription, Container, Length,
 };
 
 
@@ -64,11 +64,23 @@ impl Application for AppState {
 
 
     fn view(&mut self) -> Element<Message> {
+        let placeholder = Text::new("--- Map Here :D ---");
         let connection_vec = Text::new(format!("{:?}", self.connections));
         Container::new(
-            Column::new()
-                .padding(20)
-                .push(connection_vec))
+            Row::new()
+                .push(
+                    Container::new(
+                        Column::new()
+                            .push(placeholder))
+                        .width(Length::Fill)
+                        .height(Length::Fill)
+                        .style(style::Map))
+                .push(
+                    Column::new()
+                        .push(connection_vec)
+                        .width(Length::Units(200))))
+            .width(Length::Fill)
+            .height(Length::Fill)
             .style(style::Connections)
             .into()
     }
