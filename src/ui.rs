@@ -65,7 +65,17 @@ impl Application for AppState {
 
     fn view(&mut self) -> Element<Message> {
         let placeholder = Text::new("--- Map Here :D ---");
-        let connection_vec = Text::new(format!("{:?}", self.connections));
+        let connections: Element<_> = if self.connections.iter().count() > 0 {
+            self.connections
+                .iter()
+                .fold(Column::new().spacing(20), |column, conn|
+                      column.push(Row::new()
+                                  .push(Text::new(conn))))
+                .into()
+        } else {
+            Column::new().spacing(20)
+                .push(Text::new("No connections yet")).into()
+        };
         Container::new(
             Row::new()
                 .push(
@@ -76,9 +86,7 @@ impl Application for AppState {
                         .height(Length::Fill)
                         .style(style::Map))
                 .push(
-                    Column::new()
-                        .push(connection_vec)
-                        .width(Length::Units(200))))
+                    Container::new(connections)))
             .width(Length::Fill)
             .height(Length::Fill)
             .style(style::Connections)
