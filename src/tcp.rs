@@ -21,13 +21,13 @@ pub enum Connection {
 // struct in the update function in the UI, I'll see how that works
 // and if it ends up being laggy, I'll contstruct it in the Connection enum
 pub struct ConnectionDetails {
-    addr: String,
-    city: String,
-    country: String,
-    region: String,
-    timezone: String,
-    location: String,
-    timestamp: String,
+    pub addr: String,
+    pub city: String,
+    pub country: String,
+    pub region: String,
+    pub timezone: String,
+    pub location: String,
+    pub timestamp: String,
 }
 
 enum State{
@@ -61,7 +61,7 @@ pub fn listen(addr: &'static str) -> impl Stream<Item = Connection> {
     })
 }
 
-fn addr_lookup(addr: String) ->  ConnectionDetails{
+pub fn addr_lookup(addr: String) ->  ConnectionDetails{
     let key = env::var("IPINFO_KEY").unwrap();
     let config = IpInfoConfig { token: Some(key.to_string()), ..Default::default() };
     let mut ipinfo = IpInfo::new(config).expect("should construct");

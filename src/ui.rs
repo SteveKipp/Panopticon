@@ -12,8 +12,9 @@ pub fn main() {
     AppState::run(Settings::default())
 }
 
+
 struct AppState {
-    connections: Vec<String>,
+    connections: Vec<tcp::ConnectionDetails>,
     listening: bool
 }
 
@@ -47,7 +48,7 @@ impl Application for AppState {
         match message {
             Message::ConnectionAttempt(x) => {
                 println!("Connection Attempt {}", x);
-                self.connections.push(x.to_string())
+                self.connections.push(tcp::addr_lookup(x.to_string()))
             },
         }
 
@@ -56,7 +57,7 @@ impl Application for AppState {
 
     fn subscription(&self) -> Subscription<Message> {
         if self.listening {
-            listener::listen("0.0.0.0:22").map(Message::ConnectionAttempt)
+            listener::listen("0.0.0.0:7878").map(Message::ConnectionAttempt)
         } else {
             Subscription::none()
         }
@@ -70,7 +71,7 @@ impl Application for AppState {
                 .iter()
                 .fold(Column::new().spacing(20), |column, conn|
                       column.push(Row::new()
-                                  .push(Text::new(conn))))
+                                  .push(Text::new(conn.addr.clone()))))
                 .into()
         } else {
             Column::new().spacing(20)
