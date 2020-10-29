@@ -1,13 +1,33 @@
+use chrono;
+
 use iced::futures;
 use std::{env, fmt};
 use futures::Stream;
 use std::net::TcpListener;
 use ipinfo::{IpInfo, IpInfoConfig};
 
+
+
 #[derive(Debug, Clone, Copy)]
 pub enum Connection {
     New(std::net::SocketAddr),
     Err,
+}
+
+//will need to break these down to something beyond strings
+// especially the location for plotting lat,long values
+//
+// STOPNOTE - right now I'm going to put this connection details
+// struct in the update function in the UI, I'll see how that works
+// and if it ends up being laggy, I'll contstruct it in the Connection enum
+pub struct ConnectionDetails {
+    addr: String,
+    city: String,
+    country: String,
+    region: String,
+    timezone: String,
+    location: String,
+    timestamp: String,
 }
 
 enum State{
@@ -41,7 +61,7 @@ pub fn listen(addr: &'static str) -> impl Stream<Item = Connection> {
     })
 }
 
-fn addr_lookup(addr: String) {
+fn addr_lookup(addr: String) ->  ConnectionDetails{
     let key = env::var("IPINFO_KEY").unwrap();
     let config = IpInfoConfig { token: Some(key.to_string()), ..Default::default() };
     let mut ipinfo = IpInfo::new(config).expect("should construct");
@@ -55,7 +75,21 @@ fn addr_lookup(addr: String) {
     println!("Country: {}", details.country);
     println!("Region: {}", details.region);
     println!("Lat, Long: {}", details.loc);
-    println!("Timezone: {:?}", details.timezone);
+
+    let timezone_str = format!("{:?}", details.timezone);
+    let timestamp = format!("{:?}", chrono::offset::Local::now());
+    println!("Timezone: {}", timezone_str);
+    println!("Timestamp: {}", timestamp);
 
     println!("\n\n");
+
+    ConnectionDetails{
+        addr: ip.to_string(),
+        city: details.city.clone(),
+        country: details.country.clone(),
+        region: details.region.clone(),
+        location: details.loc.clone(),
+        timezone: timezone_str,
+        timestamp: timestamp,
+    }
 }

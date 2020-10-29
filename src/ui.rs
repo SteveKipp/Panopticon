@@ -56,7 +56,7 @@ impl Application for AppState {
 
     fn subscription(&self) -> Subscription<Message> {
         if self.listening {
-            listener::listen("0.0.0.0:7878").map(Message::ConnectionAttempt)
+            listener::listen("0.0.0.0:22").map(Message::ConnectionAttempt)
         } else {
             Subscription::none()
         }
