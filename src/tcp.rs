@@ -14,12 +14,7 @@ pub enum Connection {
     Err,
 }
 
-//will need to break these down to something beyond strings
-// especially the location for plotting lat,long values
-//
-// STOPNOTE - right now I'm going to put this connection details
-// struct in the update function in the UI, I'll see how that works
-// and if it ends up being laggy, I'll contstruct it in the Connection enum
+
 pub struct ConnectionDetails {
     pub addr: String,
     pub city: String,
@@ -66,30 +61,45 @@ pub fn addr_lookup(addr: String) ->  ConnectionDetails{
     let config = IpInfoConfig { token: Some(key.to_string()), ..Default::default() };
     let mut ipinfo = IpInfo::new(config).expect("should construct");
     let ip = &addr[0..addr.find(':').unwrap()];
-    let res = ipinfo.lookup(&[ip]).expect("should lookup");
-
-    println!("---- Peer Address Lookup ---");
-
-    let details = &res[ip];
-    println!("City: {}", details.city);
-    println!("Country: {}", details.country);
-    println!("Region: {}", details.region);
-    println!("Lat, Long: {}", details.loc);
-
-    let timezone_str = format!("{:?}", details.timezone);
     let timestamp = format!("{:?}", chrono::offset::Local::now());
-    println!("Timezone: {}", timezone_str);
-    println!("Timestamp: {}", timestamp);
+    let res = ipinfo.lookup(&[ip]);
 
-    println!("\n\n");
+    match res {
 
-    ConnectionDetails{
-        addr: ip.to_string(),
-        city: details.city.clone(),
-        country: details.country.clone(),
-        region: details.region.clone(),
-        location: details.loc.clone(),
-        timezone: timezone_str,
-        timestamp: timestamp,
+        Ok(r) => {
+            println!("---- Peer Address Lookup ---");
+
+            let details = &r[ip];
+            println!("City: {}", details.city);
+            println!("Country: {}", details.country);
+            println!("Region: {}", details.region);
+            println!("Lat, Long: {}", details.loc);
+            let timezone_str = format!("{:?}", details.timezone);
+            println!("Timezone: {}", timezone_str);
+            println!("Timestamp: {}", timestamp);
+            println!("\n\n");
+
+            ConnectionDetails{
+                addr: ip.to_string(),
+                city: details.city.clone(),
+                country: details.country.clone(),
+                region: details.region.clone(),
+                location: details.loc.clone(),
+                timezone: timezone_str,
+                timestamp: timestamp,
+            }
+        },
+        Err(e) => {
+            ConnectionDetails{
+                addr: ip.to_string(),
+                city: "!ERR".to_string(),
+                country: "!ERR".to_string(),
+                region: "!ERR".to_string(),
+                location: "!ERR".to_string(),
+                timezone: "!ERR".to_string(),
+                timestamp: timestamp,
+            }
+
+        },
     }
 }

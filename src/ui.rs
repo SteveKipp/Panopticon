@@ -24,6 +24,11 @@ enum Message {
     ConnectionAttempt(tcp::Connection)
 }
 
+fn small_time(timestamp: String) -> String{
+    let start = timestamp.find('T').unwrap();
+    timestamp[start+1..start+8].to_string()
+}
+
 
 impl Application for AppState {
     type Executor = executor::Default;
@@ -69,14 +74,35 @@ impl Application for AppState {
         let connections: Element<_> = if self.connections.iter().count() > 0 {
             self.connections
                 .iter()
-                .fold(Column::new().spacing(20), |column, conn|
-                      column.push(Row::new()
-                                  .push(Text::new(conn.addr.clone()))))
+                .fold(Column::new(), |column, conn|
+                      column.push(
+                          Container::new(
+                              Column::new()
+                                  .push(
+                                      Row::new()
+                                          .push(Container::new(Text::new("-> ")).style(style::Green))
+                                          .push(Text::new(&conn.addr))
+                                  )
+                                  .push(
+                                      Row::new()
+                                          .push(Container::new(Text::new("Origin: ")).style(style::Yellow))
+                                          .push(Text::new(&conn.country))
+                                          .push(Text::new("       "))
+                                          .push(Container::new(Text::new("Time: ")).style(style::Yellow))
+                                          .push(Text::new(small_time(conn.timestamp.clone())))
+                                  )
+                          ).padding(10)
+                           .width(Length::Units(250))
+                           .style(style::Notification)
+                      )
+                )
                 .into()
         } else {
-            Column::new().spacing(20)
+            Column::new()
                 .push(Text::new("No connections yet")).into()
         };
+
+        //STOPNOTE - need to make this a scrollable, and add hostname to ConnectionDetails struct
         Container::new(
             Row::new()
                 .push(
