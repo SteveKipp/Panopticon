@@ -3,8 +3,8 @@ use crate::listener;
 use crate::style;
 
 use iced::{
-    executor, Application, Row, Column, Command,Element, Settings,
-    Text, Subscription, Container, Length,
+    executor, scrollable, Application, Row, Column, Command,Element, Settings,
+    Text, Subscription, Container, Length, Scrollable,
 };
 
 
@@ -12,10 +12,11 @@ pub fn main() {
     AppState::run(Settings::default())
 }
 
-
+#[derive(Default)]
 struct AppState {
     connections: Vec<tcp::ConnectionDetails>,
-    listening: bool
+    listening: bool,
+    scroll: scrollable::State
 }
 
 
@@ -39,6 +40,7 @@ impl Application for AppState {
         AppState {
             connections: vec![],
             listening: true,
+            scroll: scrollable::State::new(),
         },
         Command::none(),
     )}
@@ -85,6 +87,11 @@ impl Application for AppState {
                                   )
                                   .push(
                                       Row::new()
+                                          .push(Container::new(Text::new("||")).style(style::Green))
+                                          .push(Text::new(&conn.hostname))
+                                  )
+                                  .push(
+                                      Row::new()
                                           .push(Container::new(Text::new("Origin: ")).style(style::Yellow))
                                           .push(Text::new(&conn.country))
                                           .push(Text::new("       "))
@@ -112,8 +119,8 @@ impl Application for AppState {
                         .width(Length::Fill)
                         .height(Length::Fill)
                         .style(style::Map))
-                .push(
-                    Container::new(connections)))
+                .push(Scrollable::new(&mut self.scroll).push(
+                    Container::new(connections))))
             .width(Length::Fill)
             .height(Length::Fill)
             .style(style::Connections)

@@ -17,6 +17,7 @@ pub enum Connection {
 
 pub struct ConnectionDetails {
     pub addr: String,
+    pub hostname: String,
     pub city: String,
     pub country: String,
     pub region: String,
@@ -70,6 +71,7 @@ pub fn addr_lookup(addr: String) ->  ConnectionDetails{
             println!("---- Peer Address Lookup ---");
 
             let details = &r[ip];
+            println!("Hostname: {}", details.hostname);
             println!("City: {}", details.city);
             println!("Country: {}", details.country);
             println!("Region: {}", details.region);
@@ -81,6 +83,7 @@ pub fn addr_lookup(addr: String) ->  ConnectionDetails{
 
             ConnectionDetails{
                 addr: ip.to_string(),
+                hostname: details.hostname.clone(),
                 city: details.city.clone(),
                 country: details.country.clone(),
                 region: details.region.clone(),
@@ -92,6 +95,7 @@ pub fn addr_lookup(addr: String) ->  ConnectionDetails{
         Err(e) => {
             ConnectionDetails{
                 addr: ip.to_string(),
+                hostname: "!ERR".to_string(),
                 city: "!ERR".to_string(),
                 country: "!ERR".to_string(),
                 region: "!ERR".to_string(),
