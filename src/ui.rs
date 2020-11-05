@@ -4,7 +4,7 @@ use crate::style;
 
 use iced::{
     executor, scrollable, Application, Row, Column, Command,Element, Settings,
-    Text, Subscription, Container, Length, Scrollable,
+    Text, Subscription, Container, Length, Scrollable, Svg,
 };
 
 
@@ -64,7 +64,7 @@ impl Application for AppState {
 
     fn subscription(&self) -> Subscription<Message> {
         if self.listening {
-            listener::listen("0.0.0.0:7878").map(Message::ConnectionAttempt)
+            listener::listen("0.0.0.0:22").map(Message::ConnectionAttempt)
         } else {
             Subscription::none()
         }
@@ -73,6 +73,11 @@ impl Application for AppState {
 
     fn view(&mut self) -> Element<Message> {
         let placeholder = Text::new("--- Map Here :D ---");
+
+        let svg = Svg::from_path("~/Projects/Rust/panopticon/resources/world.svg")
+        .width(Length::Fill)
+        .height(Length::Fill);
+
         let connections: Element<_> = if self.connections.iter().count() > 0 {
             self.connections
                 .iter()
@@ -115,7 +120,7 @@ impl Application for AppState {
                 .push(
                     Container::new(
                         Column::new()
-                            .push(placeholder))
+                            .push(svg))
                         .width(Length::Fill)
                         .height(Length::Fill)
                         .style(style::Map))
