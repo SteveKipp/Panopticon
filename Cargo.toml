@@ -10,6 +10,6 @@ edition = "2018"
 ipinfo = "0.1"
 futures = "0.3"
 tokio = { version = "0.3", features = ["full"] }
-iced = { git = "https://github.com/hecrj/iced", features = ["glow"], rev = "3f44d331d9c7afe14416130f54abd2b327a686bf" }
+iced = { git = "https://github.com/hecrj/iced", features = ["svg"], rev = "3f44d331d9c7afe14416130f54abd2b327a686bf" }
 iced_native = { git = "https://github.com/hecrj/iced.git", default-features = false, rev = "3f44d331d9c7afe14416130f54abd2b327a686bf" }
 chrono = "0.4"
