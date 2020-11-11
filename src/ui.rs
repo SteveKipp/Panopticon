@@ -72,11 +72,14 @@ impl Application for AppState {
 
 
     fn view(&mut self) -> Element<Message> {
-        let placeholder = Text::new("--- Map Here :D ---");
 
-        let svg = Svg::from_path("~/Projects/Rust/panopticon/resources/world.svg")
+        let svg = Container::new(Svg::from_path(format!(
+            "{}/resources/world.svg",
+            env!("CARGO_ROOT"))))
         .width(Length::Fill)
-        .height(Length::Fill);
+        .height(Length::Fill)
+        .center_x()
+        .center_y();
 
         let connections: Element<_> = if self.connections.iter().count() > 0 {
             self.connections
@@ -114,7 +117,6 @@ impl Application for AppState {
                 .push(Text::new("No connections yet")).into()
         };
 
-        //STOPNOTE - need to make this a scrollable, and add hostname to ConnectionDetails struct
         Container::new(
             Row::new()
                 .push(
@@ -123,7 +125,7 @@ impl Application for AppState {
                             .push(svg))
                         .width(Length::Fill)
                         .height(Length::Fill)
-                        .style(style::Map))
+                        .style(style::Notification))
                 .push(Scrollable::new(&mut self.scroll).push(
                     Container::new(connections))))
             .width(Length::Fill)
