@@ -75,11 +75,14 @@ impl Application for AppState {
 
         let svg = Container::new(Svg::from_path(format!(
             "{}/resources/world.svg",
-            env!("CARGO_ROOT"))))
+            env!("CARGO_ROOT")))
         .width(Length::Fill)
-        .height(Length::Fill)
+        .height(Length::Fill))
+        .width(Length::Fill)
+        .height(Length::Fill)    
         .center_x()
-        .center_y();
+        .center_y()
+        .style(style::Map);
 
         let connections: Element<_> = if self.connections.iter().count() > 0 {
             self.connections
@@ -120,12 +123,10 @@ impl Application for AppState {
         Container::new(
             Row::new()
                 .push(
-                    Container::new(
                         Column::new()
-                            .push(svg))
+                            .push(svg)
                         .width(Length::Fill)
-                        .height(Length::Fill)
-                        .style(style::Notification))
+                        .height(Length::Fill))
                 .push(Scrollable::new(&mut self.scroll).push(
                     Container::new(connections))))
             .width(Length::Fill)

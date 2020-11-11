@@ -49,7 +49,7 @@ pub fn listen(addr: &'static str) -> impl Stream<Item = Connection> {
 
                 match listener.accept(){
                     Ok((_socket, addr)) => Some((Connection::New(addr), State::Active)),
-                    Err(e) => Some((Connection::Err, State::Stopped)),
+                    Err(_e) => Some((Connection::Err, State::Stopped)),
                 }
             },
             State::Stopped => Some((Connection::Err, State::Stopped)),
@@ -92,7 +92,7 @@ pub fn addr_lookup(addr: String) ->  ConnectionDetails{
                 timestamp: timestamp,
             }
         },
-        Err(e) => {
+        Err(_e) => {
             ConnectionDetails{
                 addr: ip.to_string(),
                 hostname: "!ERR".to_string(),
